@@ -10,4 +10,4 @@ Bash script to set the fan state on the ZenBook S 16 UM5606 and Vivobook M5606
 ## Installation
 
 - Arch Linux: [`asus-5606-fan-state-git` AUR package](https://aur.archlinux.org/packages/asus-5606-fan-state-git) (`yay -S asus-5606-fan-state-git`)
-- Other Linux: copy `fan_state` to a directory in `$PATH`, `chnmod +x` if needed.
+- Other Linux: copy `fan_state` to a directory in `$PATH`, `chmod +x` if needed.
