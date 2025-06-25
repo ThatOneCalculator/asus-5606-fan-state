@@ -2,6 +2,8 @@
 
 Bash script to set the fan state on the ZenBook S 16 UM5606 and Vivobook M5606
 
+Note: for the Vivobook S 16 S5506, edit `fan_state` and replace all instances of `0x110019` with `0x5002f`
+
 ## Usage
 
 - `fan_state get`: gets current state
