@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+check_root() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Error: This script must be run as root. Please use 'sudo $0 $*' or run as root user."
+        exit 1
+    fi
+}
 
 get_reg_no() {
     local model
@@ -13,6 +20,8 @@ get_reg_no() {
 }
 
 set_fan_state() {
+    check_root
+    
     local state_value
 
     case $1 in
@@ -35,21 +44,18 @@ set_fan_state() {
     esac
 
     echo "Setting fan state to $state_value"
-    sudo -i -u root bash << EOF
-cd /sys/kernel/debug/asus-nb-wmi
-echo $(get_reg_no) > dev_id
-echo $state_value > ctrl_param
-cat devs
-EOF
+    cd /sys/kernel/debug/asus-nb-wmi
+    echo $(get_reg_no) > dev_id
+    echo $state_value > ctrl_param
+    cat devs
 }
 
 get_fan_state() {
-    state=$(sudo -i -u root bash << EOF
-cd /sys/kernel/debug/asus-nb-wmi
-echo $(get_reg_no) > dev_id
-cat ctrl_param
-EOF
-    )
+    check_root
+    
+    cd /sys/kernel/debug/asus-nb-wmi
+    echo $(get_reg_no) > dev_id
+    state=$(cat ctrl_param)
     
     case $state in
         0x00000000)
