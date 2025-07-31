@@ -1,8 +1,6 @@
 # ASUS (UM|M)5606 fan state script
 
-Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, and Zenbook S 14 UX5406SA
-
-Note: for the Vivobook S 16 S5506, edit `fan_state` and replace all instances of `0x110019` with `0x5002f`
+Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zenbook S 14 UX5406SA and Vivobook S 15/16 S5506
 
 ## Usage
 
