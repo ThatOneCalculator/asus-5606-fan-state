@@ -1,5 +1,17 @@
 #!/bin/bash
 
+get_reg_no() {
+    local model
+    model=$(cat /sys/class/dmi/id/product_name 2>/dev/null | tr -d '\n' | xargs)
+    if [[ $model =~ Vivobook\ S\ 16\ S5506 ]]; then
+        echo "0x5002f"
+    elif [[ $model =~ Zenbook\ S\ 16\ UM5606 ]] || [[ $model =~ Vivobook\ M5606 ]] || [[ $model =~ Zenbook\ S\ 14\ UX5406SA ]]; then
+        echo "0x110019"
+    else
+        echo "0x110019"
+    fi
+}
+
 set_fan_state() {
     local state_value
 
@@ -25,7 +37,7 @@ set_fan_state() {
     echo "Setting fan state to $state_value"
     sudo -i -u root bash << EOF
 cd /sys/kernel/debug/asus-nb-wmi
-echo 0x110019 > dev_id
+echo $(get_reg_no) > dev_id
 echo $state_value > ctrl_param
 cat devs
 EOF
@@ -34,7 +46,7 @@ EOF
 get_fan_state() {
     state=$(sudo -i -u root bash << EOF
 cd /sys/kernel/debug/asus-nb-wmi
-echo 0x110019 > dev_id
+echo $(get_reg_no) > dev_id
 cat ctrl_param
 EOF
     )
