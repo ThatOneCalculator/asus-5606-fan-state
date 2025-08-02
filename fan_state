@@ -10,7 +10,7 @@ check_root() {
 get_reg_no() {
     local model
     model=$(cat /sys/class/dmi/id/product_name 2>/dev/null | tr -d '\n' | xargs)
-    if [[ $model =~ Vivobook\ S\ 16\ S5506 ]]; then
+    if [[ $model =~ Vivobook\ S\ 15\ S5506 ]]; then
         echo "0x5002f"
     elif [[ $model =~ Zenbook\ S\ 16\ UM5606 ]] || [[ $model =~ Vivobook\ M5606 ]] || [[ $model =~ Zenbook\ S\ 14\ UX5406SA ]]; then
         echo "0x110019"
