@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+SERVICE_NAME="asus-fan-state.service"
 
 check_root() {
     if [ "$EUID" -ne 0 ]; then
-        echo "Error: This script must be run as root. Please use 'sudo $0 $*' or run as root user."
+        echo "Error: This script must be run as root. Please use 'sudo $0 ...' or run as root user."
         exit 1
     fi
 }
@@ -19,83 +20,116 @@ get_reg_no() {
     fi
 }
 
+map_fan_state_to_value() {
+    case "${1,,}" in    # lowercase so matching is case-insensitive
+        0|standard) echo 0 ;;
+        1|quiet)     echo 1 ;;
+        2|high)      echo 2 ;;
+        3|full)      echo 3 ;;
+        *) return 1 ;;
+    esac
+}
+
 set_fan_state() {
     check_root
-    
     local state_value
-
-    case $1 in
-        0|standard)
-            state_value=0
-            ;;
-        1|quiet)
-            state_value=1
-            ;;
-        2|high)
-            state_value=2
-            ;;
-        3|full)
-            state_value=3
-            ;;
-        *)
-            echo "Error: Invalid fan state. Use 0-3 or standard/quiet/high/full."
-            exit 1
-            ;;
-    esac
-
-    echo "Setting fan state to $state_value"
-    cd /sys/kernel/debug/asus-nb-wmi
-    echo $(get_reg_no) > dev_id
-    echo $state_value > ctrl_param
-    cat devs
+    state_value=$(map_fan_state_to_value "$1") || {
+        echo "Error: Invalid fan state. Use 0-3 or standard/quiet/high/full."
+        return 1
+    }
+    echo "Setting fan state to $state_value..."
+    cd "/sys/kernel/debug/asus-nb-wmi" || { echo "Error: asus-nb-wmi not found!"; exit 1; }
+    echo "$(get_reg_no)" > dev_id
+    echo "$state_value" > ctrl_param
+    echo "Fan state set successfully."
 }
 
 get_fan_state() {
     check_root
-    
-    cd /sys/kernel/debug/asus-nb-wmi
-    echo $(get_reg_no) > dev_id
-    state=$(cat ctrl_param)
-    
-    case $state in
-        0x00000000)
-            echo "Current fan state: Standard (0)"
-            ;;
-        0x00000001)
-            echo "Current fan state: Quiet (1)"
-            ;;
-        0x00000002)
-            echo "Current fan state: High-Performance (2)"
-            ;;
-        0x00000003)
-            echo "Current fan state: Full-Performance (3)"
-            ;;
-        *)
-            echo "Current fan state: Unknown ($state)"
-            ;;
+    cd "/sys/kernel/debug/asus-nb-wmi" || { echo "Error: asus-nb-wmi not found!"; exit 1; }
+    echo "$(get_reg_no)" > dev_id
+    case "$(cat ctrl_param)" in
+        0x00000000) echo "Current fan state: Standard (0)" ;;
+        0x00000001) echo "Current fan state: Quiet (1)" ;;
+        0x00000002) echo "Current fan state: High-Performance (2)" ;;
+        0x00000003) echo "Current fan state: Full-Performance (3)" ;;
+        *) echo "Current fan state: Unknown ($(cat ctrl_param))" ;;
     esac
 }
 
-if [ $# -eq 0 ]; then
-    echo "Usage: fan_state [set <0-3|standard|quiet|high|full>|get]"
-    exit 1
+create_fan_service() {
+    local state_value="$1"
+    local service_content="[Unit]
+Description=Set ASUS fan state at boot
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo $(get_reg_no) > /sys/kernel/debug/asus-nb-wmi/dev_id && echo $state_value > /sys/kernel/debug/asus-nb-wmi/ctrl_param'
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+"
+    echo "$service_content" | tee "/etc/systemd/system/$SERVICE_NAME" > /dev/null
+    systemctl daemon-reload
+    systemctl enable "$SERVICE_NAME"
+    echo "Persistence enabled with $SERVICE_NAME."
+}
+
+set_fan_state_persistent() {
+    check_root
+    read -rp "Enter fan state (0-3 | standard | quiet | high | full), or 0 to cancel: " state_input
+    [[ "$state_input" == "0" ]] && { echo "Cancelled."; return; }
+    local state_value
+    state_value=$(map_fan_state_to_value "$state_input") || { echo "Invalid option."; return 1; }
+    set_fan_state "$state_input" && create_fan_service "$state_value" && systemctl start "$SERVICE_NAME" && \
+        echo "Fan state set to $state_value and persistent at boot."
+}
+
+# CLI arguments
+if [ $# -gt 0 ]; then
+    case "$1" in
+        get) get_fan_state ;;
+        set)
+            [[ $# -ne 2 ]] && { echo "Usage: $0 set <0-3|standard|quiet|high|full>"; exit 1; }
+            set_fan_state "$2" && echo && get_fan_state
+            ;;
+        set-persistent)
+            [[ $# -ne 2 ]] && { echo "Usage: $0 set-persistent <0-3|standard|quiet|high|full>"; exit 1; }
+            local val; val=$(map_fan_state_to_value "$2") || { echo "Invalid fan state."; exit 1; }
+            set_fan_state "$2" && create_fan_service "$val" && systemctl start "$SERVICE_NAME"
+            ;;
+        *)
+            echo "Invalid option. Usage:"
+            echo "  $0 get"
+            echo "  $0 set <0-3|standard|quiet|high|full>"
+            echo "  $0 set-persistent <0-3|standard|quiet|high|full>"
+            echo "Or run without arguments for interactive menu."
+            exit 1
+            ;;
+    esac
+    exit 0
 fi
 
-case $1 in
-    set)
-        if [ $# -ne 2 ]; then
-            echo "Error: 'set' command requires an argument (0-3 or standard/quiet/high/full)."
-            exit 1
-        fi
-        set_fan_state $2
-        ;;
-    get)
-        get_fan_state
-        ;;
-    *)
-        echo "Error: Invalid command. Use 'set <0-3|standard|quiet|high|full>' or 'get'."
-        exit 1
-        ;;
-esac
 
-exit
+# Interactive Menu
+echo
+echo "============================"
+echo " ASUS Fan Control"
+echo "============================"
+echo "1. Show current fan state"
+echo "2. Set fan state (instant)"
+echo "3. Set fan state (persistent)"
+echo "0. Exit"
+read -rp "Enter choice [0-3]: " choice
+
+case "$choice" in
+    0) echo "Exiting..." ;;
+    1) get_fan_state ;;
+    2)
+        read -rp "Enter fan state (0-3 | standard | quiet | high | full): " state_input
+        set_fan_state "$state_input" && echo && get_fan_state
+        ;;
+    3) set_fan_state_persistent ;;
+    *) echo "Invalid option." ;;
+esac
