@@ -14,6 +14,7 @@ Bash script to **view, set, and persist** the fan state on the following ASUS la
 
 - `fan_state get`: gets current state
 - `fan_state set <0-3|standard|quiet|high|full>`: set fan state to 0/standard, 1/quiet, 2/high, or 3/full
+- `sudo fan_state set-persistent <0-3|standard|quiet|high|full>` : enable persistent mode
 
 ## Dependencies
 
