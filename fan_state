@@ -7,6 +7,15 @@ check_root() {
     fi
 }
 
+check_debugfs() {
+    check_root
+
+    if [ -z "$(ls -A /sys/kernel/debug)" ]; then
+        printf "\033[33;1mdebugfs not mounted, mounting temporarily.\033[0m\n\033[34;1mYou can permanently mount debugfs by adding the following fstab entry:\033[0m\ndebugfs /sys/kernel/debug debugfs defaults 0 0\n"
+        mount -t debugfs none /sys/kernel/debug
+    fi
+}
+
 get_reg_no() {
     local model
     model=$(cat /sys/class/dmi/id/product_name 2>/dev/null | tr -d '\n' | xargs)
@@ -20,8 +29,8 @@ get_reg_no() {
 }
 
 set_fan_state() {
-    check_root
-    
+    check_debugfs
+
     local state_value
 
     case $1 in
@@ -51,8 +60,8 @@ set_fan_state() {
 }
 
 get_fan_state() {
-    check_root
-    
+    check_debugfs
+
     cd /sys/kernel/debug/asus-nb-wmi
     echo $(get_reg_no) > dev_id
     state=$(cat ctrl_param)
