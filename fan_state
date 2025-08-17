@@ -21,7 +21,7 @@ get_reg_no() {
 }
 
 map_fan_state_to_value() {
-    case "${1,,}" in    # lowercase so matching is case-insensitive
+    case "${1,,}" in
         0|standard) echo 0 ;;
         1|quiet)     echo 1 ;;
         2|high)      echo 2 ;;
@@ -78,58 +78,42 @@ WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target s
 
 set_fan_state_persistent() {
     check_root
-    read -rp "Enter fan state (0-3 | standard | quiet | high | full), or 0 to cancel: " state_input
-    [[ "$state_input" == "0" ]] && { echo "Cancelled."; return; }
     local state_value
-    state_value=$(map_fan_state_to_value "$state_input") || { echo "Invalid option."; return 1; }
-    set_fan_state "$state_input" && create_fan_service "$state_value" && systemctl start "$SERVICE_NAME" && \
-        echo "Fan state set to $state_value and persistent at boot."
+    state_value=$(map_fan_state_to_value "$1") || {
+        echo "Error: Invalid fan state. Use 0-3 or standard/quiet/high/full."
+        return 1
+    }
+    set_fan_state "$1" && create_fan_service "$state_value" && systemctl start "$SERVICE_NAME"
+    echo "Fan state set to $state_value and persistent at boot."
 }
 
-# CLI arguments
+# CLI arguments only
 if [ $# -gt 0 ]; then
     case "$1" in
-        get) get_fan_state ;;
+        get)
+            get_fan_state
+            ;;
         set)
             [[ $# -ne 2 ]] && { echo "Usage: $0 set <0-3|standard|quiet|high|full>"; exit 1; }
             set_fan_state "$2" && echo && get_fan_state
             ;;
         set-persistent)
             [[ $# -ne 2 ]] && { echo "Usage: $0 set-persistent <0-3|standard|quiet|high|full>"; exit 1; }
-            local val; val=$(map_fan_state_to_value "$2") || { echo "Invalid fan state."; exit 1; }
-            set_fan_state "$2" && create_fan_service "$val" && systemctl start "$SERVICE_NAME"
+            set_fan_state_persistent "$2"
             ;;
         *)
             echo "Invalid option. Usage:"
             echo "  $0 get"
             echo "  $0 set <0-3|standard|quiet|high|full>"
             echo "  $0 set-persistent <0-3|standard|quiet|high|full>"
-            echo "Or run without arguments for interactive menu."
             exit 1
             ;;
     esac
     exit 0
+else
+    echo "Usage:"
+    echo "  $0 get"
+    echo "  $0 set <0-3|standard|quiet|high|full>"
+    echo "  $0 set-persistent <0-3|standard|quiet|high|full>"
+    exit 1
 fi
-
-
-# Interactive Menu
-echo
-echo "============================"
-echo " ASUS Fan Control"
-echo "============================"
-echo "1. Show current fan state"
-echo "2. Set fan state (instant)"
-echo "3. Set fan state (persistent)"
-echo "0. Exit"
-read -rp "Enter choice [0-3]: " choice
-
-case "$choice" in
-    0) echo "Exiting..." ;;
-    1) get_fan_state ;;
-    2)
-        read -rp "Enter fan state (0-3 | standard | quiet | high | full): " state_input
-        set_fan_state "$state_input" && echo && get_fan_state
-        ;;
-    3) set_fan_state_persistent ;;
-    *) echo "Invalid option." ;;
-esac
