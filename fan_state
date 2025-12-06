@@ -2,19 +2,25 @@
 
 set -euo pipefail
 
-check_root() {
-    if [ "$EUID" -ne 0 ]; then
-        echo "Error: This script must be run as root. Please use 'sudo $0 $*' or run as root user."
+check_debugfs() {
+    if ! grep -q "debugfs" /proc/mounts; then
+        echo "Error: debugfs not mounted. Please mount it with:"
+        echo "  sudo mount -t debugfs none /sys/kernel/debug"
+        echo "Or add to /etc/fstab: debugfs /sys/kernel/debug debugfs mode=0755 0 0"
         exit 1
     fi
-}
 
-check_debugfs() {
-    check_root
+    if [ ! -d /sys/kernel/debug/asus-nb-wmi ]; then
+        echo "Error: /sys/kernel/debug/asus-nb-wmi not found."
+        echo "Make sure the asus-nb-wmi module is loaded."
+        exit 1
+    fi
 
-    if [ -z "$(ls -A /sys/kernel/debug)" ]; then
-        printf "\033[33;1mdebugfs not mounted, mounting temporarily.\033[0m\n\033[34;1mYou can permanently mount debugfs by adding the following fstab entry:\033[0m\ndebugfs /sys/kernel/debug debugfs defaults 0 0\n"
-        mount -t debugfs none /sys/kernel/debug
+    if [ ! -w /sys/kernel/debug/asus-nb-wmi/dev_id ]; then
+        echo "Error: No write permission to /sys/kernel/debug/asus-nb-wmi/"
+        echo "Please run the systemd service to set permissions:"
+        echo "  sudo systemctl start asus-fan-permissions.service"
+        exit 1
     fi
 }
 
@@ -67,7 +73,7 @@ get_fan_state() {
     cd /sys/kernel/debug/asus-nb-wmi
     echo $(get_reg_no) > dev_id
     state=$(cat ctrl_param)
-    
+
     case $state in
         0x00000000)
             echo "Current fan state: Standard (0)"

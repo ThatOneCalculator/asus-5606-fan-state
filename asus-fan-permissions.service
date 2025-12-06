@@ -1,0 +1,12 @@
+[Unit]
+Description=Set permissions for ASUS fan control
+After=sys-kernel-debug.mount
+ConditionPathExists=/sys/kernel/debug/asus-nb-wmi
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'chmod 755 /sys/kernel/debug && chmod 666 /sys/kernel/debug/asus-nb-wmi/dev_id && chmod 666 /sys/kernel/debug/asus-nb-wmi/ctrl_param'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
