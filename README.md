@@ -4,8 +4,10 @@ Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zen
 
 ## Usage
 
-- `fan_state get`: gets current state
 - `fan_state set <0-3|standard|quiet|high|full>`: set fan state to 0/standard, 1/quiet, 2/high, or 3/full
+- `fan_state get`: gets current state
+- `fan_state get-int`: gets current state as integer
+- `fan_state help`: show help
 
 ## Dependencies
 

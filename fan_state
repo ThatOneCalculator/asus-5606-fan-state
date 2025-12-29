@@ -74,43 +74,67 @@ get_fan_state() {
     echo $(get_reg_no) > dev_id
     state=$(cat ctrl_param)
 
+    local state_value
+    local state_name
+
     case $state in
         0x00000000)
-            echo "Current fan state: Standard (0)"
+        	state_value=0
+        	state_name="standard"
             ;;
         0x00000001)
-            echo "Current fan state: Quiet (1)"
+            state_value=1
+            state_name="quiet"
             ;;
         0x00000002)
-            echo "Current fan state: High-Performance (2)"
+            state_value=2
+            state_name="high"
             ;;
         0x00000003)
-            echo "Current fan state: Full-Performance (3)"
+            state_value=3
+            state_name="full"
             ;;
         *)
-            echo "Current fan state: Unknown ($state)"
+            state_value="${state}"
+            state_name="unknown"
             ;;
     esac
+
+    echo "${state_name} (${state_value})"
+}
+
+help_msg() {
+    echo "Usage:"
+    echo "  fan_state set <0-3|standard|quiet|high|full> - Set the fan state."
+    echo "  fan_state get - Get the current fan state."
+    echo "  fan_state get-int - Get the current fan state as an integer."
 }
 
 if [ $# -eq 0 ]; then
-    echo "Usage: fan_state [set <0-3|standard|quiet|high|full>|get]"
+    help_msg
     exit 1
 fi
 
 case $1 in
-    set)
+    set|-s|--set)
         if [ $# -ne 2 ]; then
             echo "Error: 'set' command requires an argument (0-3 or standard/quiet/high/full)."
             exit 1
         fi
         set_fan_state $2
         ;;
-    get)
+    get|-g|--get)
         get_fan_state
         ;;
+    get-int|--get-int)
+        res="$(get_fan_state)"
+        echo "${res//[^0-9]/}"
+        ;;
+    help|--help|-h)
+        help_msg
+        ;;
     *)
-        echo "Error: Invalid command. Use 'set <0-3|standard|quiet|high|full>' or 'get'."
+        help_msg
         exit 1
         ;;
 esac
