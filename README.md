@@ -20,3 +20,7 @@ Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zen
 - Other Linux:
   - Copy `fan_state` to a directory in `$PATH`
   - Copy `asus-fan-permissions.service` to `/usr/lib/systemd/system/` & enable the service
+
+## Shell Integration
+
+If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin on [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
