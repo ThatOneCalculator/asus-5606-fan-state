@@ -69,7 +69,7 @@ set_fan_state() {
     if command -v dbus-send >/dev/null 2>&1; then
         dbus-send --session \
           --dest=dev.t1c.FanState \
-          --type=method_call \
+          --type=signal \
           /dev/t1c/FanState \
           dev.t1c.FanState.StateSet \
           int32:$state_value
