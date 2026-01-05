@@ -13,6 +13,7 @@ Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zen
 
 - Linux kernel 6.11+
 - `bash`
+- `dbus` (optional)
 
 ## Installation
 
