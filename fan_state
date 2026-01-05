@@ -61,10 +61,15 @@ set_fan_state() {
     esac
 
     echo "Setting fan state to $state_value"
+    
     cd /sys/kernel/debug/asus-nb-wmi
     echo $(get_reg_no) > dev_id
     echo $state_value > ctrl_param
     cat devs
+    
+    if [[ -n "$XDG_RUNTIME_DIR" ]]; then
+        echo "$state_value" > "$XDG_RUNTIME_DIR/fan_state"
+    fi
     
     if command -v dbus-send >/dev/null 2>&1; then
         dbus-send --session \

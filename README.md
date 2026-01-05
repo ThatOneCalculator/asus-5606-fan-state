@@ -25,3 +25,7 @@ Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zen
 ## Shell Integration
 
 If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin on [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
+
+For your own integrations, to monitor the fan state, you can either:
+- Monitor the `$XDG_RUNTIME_DIR/fan_state` file
+- Monitor the `dev.t1c.FanState` interface for a `StateSet` member: `dbus-monitor --session "type='signal',interface='dev.t1c.FanState'"`
