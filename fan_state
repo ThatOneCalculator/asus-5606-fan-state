@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -o pipefail
 
 check_debugfs() {
     if ! grep -q "debugfs" /proc/mounts; then
