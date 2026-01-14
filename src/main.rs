@@ -62,7 +62,6 @@ impl FanState {
     }
 }
 
-/// A custom parser that accepts both names and numeric values
 fn parse_fan_state(s: &str) -> Result<FanState, String> {
     if let Ok(n) = s.parse::<u8>() {
         return FanState::from_value(n)
