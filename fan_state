@@ -67,7 +67,11 @@ set_fan_state() {
     echo $state_value > ctrl_param
     cat devs
     
-    if [[ -n "$XDG_RUNTIME_DIR" ]]; then
+    if [[ $EUID -eq 0 ]] && [[ -z "$XDG_RUNTIME_DIR" ]] && [[ -n "$SUDO_UID" ]]; then
+        XDG_RUNTIME_DIR="/run/user/$SUDO_UID"
+    fi
+    
+    if [[ -n "$XDG_RUNTIME_DIR" ]] && [[ -d "$XDG_RUNTIME_DIR" ]]; then
         echo "$state_value" > "$XDG_RUNTIME_DIR/fan_state"
     fi
     
