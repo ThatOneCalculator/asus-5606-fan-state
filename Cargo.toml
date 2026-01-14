@@ -1,0 +1,21 @@
+[package]
+name = "fan_state"
+version = "1.0.0"
+edition = "2024"
+description = "ASUS laptop fan state control utility"
+authors = ["Kainoa Kanter <kainoa@t1c.dev>"]
+license = "MIT"
+
+[dependencies]
+libc = "0.2"
+clap = { version = "4", features = ["derive"] }
+dbus = { version = "0.9", optional = true }
+
+[features]
+default = ["dbus"]
+dbus = ["dep:dbus"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
