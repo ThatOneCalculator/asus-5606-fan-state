@@ -9,7 +9,7 @@ license = "MIT"
 [dependencies]
 libc = "0.2"
 clap = { version = "4", features = ["derive"] }
-dbus = "0.9"
+dbus = { version = "0.9", optional = true }
 
 [profile.release]
 opt-level = "s"

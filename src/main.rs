@@ -5,8 +5,11 @@ use std::path::Path;
 use std::process;
 
 use clap::{Parser, Subcommand};
+#[cfg(feature = "dbus")]
 use dbus::Message;
+#[cfg(feature = "dbus")]
 use dbus::blocking::Connection;
+#[cfg(feature = "dbus")]
 use dbus::channel::{Channel, Sender};
 
 const DEBUGFS_PATH: &str = "/sys/kernel/debug/asus-nb-wmi";
@@ -181,6 +184,7 @@ fn get_xdg_runtime_dir() -> Option<String> {
     None
 }
 
+#[cfg(feature = "dbus")]
 fn get_dbus_address() -> Option<String> {
     if let Ok(addr) = env::var("DBUS_SESSION_BUS_ADDRESS") {
         Some(addr)
@@ -193,6 +197,7 @@ fn get_dbus_address() -> Option<String> {
     }
 }
 
+#[cfg(feature = "dbus")]
 fn send_dbus_signal(state: FanState) -> Result<(), Box<dyn std::error::Error>> {
     let Some(addr) = get_dbus_address() else {
         return Ok(());
@@ -212,6 +217,11 @@ fn send_dbus_signal(state: FanState) -> Result<(), Box<dyn std::error::Error>> {
         .send(signal)
         .map_err(|_| "Failed to send D-Bus signal")?;
 
+    Ok(())
+}
+
+#[cfg(not(feature = "dbus"))]
+fn send_dbus_signal(_state: FanState) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
