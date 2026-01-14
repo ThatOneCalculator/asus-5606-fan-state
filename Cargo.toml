@@ -1,0 +1,17 @@
+[package]
+name = "asus_5606_fan_state"
+version = "0.1.0"
+edition = "2024"
+description = "ASUS laptop fan state control utility"
+authors = ["Kainoa Kanter <kainoa@t1c.dev>"]
+license = "MIT"
+
+[dependencies]
+libc = "0.2"
+clap = { version = "4", features = ["derive"] }
+dbus = "0.9"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
