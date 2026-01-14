@@ -80,11 +80,11 @@ set_fan_state() {
     
         if [[ -n "$DBUS_SESSION_BUS_ADDRESS" ]]; then
             dbus-send --session \
-            --dest=dev.t1c.FanState \
-            --type=signal \
-            /dev/t1c/FanState \
-            dev.t1c.FanState.StateSet \
-            int32:$state_value 2>/dev/null || true
+                --dest=dev.t1c.FanState \
+                --type=signal \
+                /dev/t1c/FanState \
+                dev.t1c.FanState.StateSet \
+                int32:$state_value 2>/dev/null || true
         fi
     fi
 }
