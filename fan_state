@@ -12,7 +12,7 @@ check_debugfs() {
 
     if [ ! -d /sys/kernel/debug/asus-nb-wmi ]; then
         echo "Error: /sys/kernel/debug/asus-nb-wmi not found."
-        echo "Make sure the asus-nb-wmi module is loaded."
+        echo "Make sure the asus-nb-wmi module is loaded, and that the asus-fan-permissions service is loaded and running."
         exit 1
     fi
 
@@ -72,12 +72,20 @@ set_fan_state() {
     fi
     
     if command -v dbus-send >/dev/null 2>&1; then
-        dbus-send --session \
-          --dest=dev.t1c.FanState \
-          --type=signal \
-          /dev/t1c/FanState \
-          dev.t1c.FanState.StateSet \
-          int32:$state_value
+        if [[ $EUID -eq 0 ]] && [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
+            if [[ -n "$SUDO_UID" ]]; then
+                export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$SUDO_UID/bus"
+            fi
+        fi
+    
+        if [[ -n "$DBUS_SESSION_BUS_ADDRESS" ]]; then
+            dbus-send --session \
+            --dest=dev.t1c.FanState \
+            --type=signal \
+            /dev/t1c/FanState \
+            dev.t1c.FanState.StateSet \
+            int32:$state_value 2>/dev/null || true
+        fi
     fi
 }
 
