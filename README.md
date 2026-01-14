@@ -17,11 +17,18 @@ Bash script to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zen
 
 ## Installation
 
-- Arch Linux: [`asus-5606-fan-state-git` AUR package](https://aur.archlinux.org/packages/asus-5606-fan-state-git) (`yay -S asus-5606-fan-state-git`)
+- Arch Linux:
+```sh
+yay -S asus-5606-fan-state # -git, -bin
+```
+
 - Other Linux:
-  - `cargo build --release`
-    - Append `--no-default-features` to disable dbus
-  - Copy `./target/release/fan_state` to a directory in `$PATH`
+  - From source:
+    - `cargo build --release`
+      - Append `--no-default-features` to disable dbus
+    - Copy `./target/release/fan_state` to a directory in `$PATH`
+  - Prebuilt binary:
+    - Download [the latest binary](https://github.com/ThatOneCalculator/asus-5606-fan-state/releases/download/v1.0.0/fan_state) and move it into a directory in `$PATH`
   - Copy `asus-fan-permissions.service` to `/usr/lib/systemd/system/` & enable the service
 
 ## Shell Integration
