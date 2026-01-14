@@ -53,15 +53,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "asus_5606_fan_state"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dbus",
- "libc",
-]
-
-[[package]]
 name = "clap"
 version = "4.5.54"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -116,6 +107,15 @@ dependencies = [
  "libc",
  "libdbus-sys",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "fan_state"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dbus",
+ "libc",
 ]
 
 [[package]]

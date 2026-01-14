@@ -1,5 +1,5 @@
 [package]
-name = "asus_5606_fan_state"
+name = "fan_state"
 version = "0.1.0"
 edition = "2024"
 description = "ASUS laptop fan state control utility"
@@ -10,6 +10,10 @@ license = "MIT"
 libc = "0.2"
 clap = { version = "4", features = ["derive"] }
 dbus = { version = "0.9", optional = true }
+
+[features]
+default = ["dbus"]
+dbus = ["dep:dbus"]
 
 [profile.release]
 opt-level = "s"
