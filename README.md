@@ -12,8 +12,9 @@ Program to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zenbook
 ## Dependencies
 
 - Linux kernel 6.11+
-- Rust compiler (if building from source)
-- `dbus` (optional)
+- Rust compiler <sub>(if building from source)</sub>
+- systemd, bash <sub>(for systemd service, can be easily reimplemented for other init systems)</sub>
+- dbus <sub>(optional)</sub>
 
 ## Installation
 
