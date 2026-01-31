@@ -25,13 +25,21 @@ yay -S asus-5606-fan-state # -git, -bin
 
 ### Other Linux
 
+- Prebuilt binary with install script:
+```sh
+curl -fsSL https://raw.githubusercontent.com/ThatOneCalculator/asus-5606-fan-state/refs/heads/main/install.sh | bash
+```
+
 - From source:
-  - `cargo build --release`
-    - Append `--no-default-features` to disable dbus
-  - Copy `./target/release/fan_state` to a directory in `$PATH`
-- Prebuilt binary:
-  - Download [the latest binary](https://github.com/ThatOneCalculator/asus-5606-fan-state/releases/download/v1.0.0/fan_state) and move it into a directory in `$PATH`
-- Copy `asus-fan-permissions.service` to `/usr/lib/systemd/system/` & enable the service (needed for both methods)
+```sh
+git clone https://github.com/ThatOneCalculator/asus-5606-fan-state
+cd asus-5606-fan-state/
+cargo build --release # --no-default-features to disable dbus
+sudo install -Dm755 ./target/release/fan_state /usr/bin/fan_state
+sudo install -Dm644 ./asus-fan-permissions.service /usr/lib/systemd/system/asus-fan-permissions.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now asus-fan-permissions.service
+```
 
 ## Shell Integration
 
