@@ -25,12 +25,12 @@ yay -S asus-5606-fan-state # -git, -bin
 
 ### Other Linux
 
-- Prebuilt binary with install script:
+#### Prebuilt binary with install script:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/ThatOneCalculator/asus-5606-fan-state/refs/heads/main/install.sh | bash
 ```
 
-- From source:
+#### From source:
 ```sh
 git clone https://github.com/ThatOneCalculator/asus-5606-fan-state
 cd asus-5606-fan-state/
@@ -41,7 +41,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now asus-fan-permissions.service
 ```
 
-## Shell Integration
+## Desktop/Programatic Integration
 
 If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin in [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
 
