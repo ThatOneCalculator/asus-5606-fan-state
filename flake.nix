@@ -1,5 +1,5 @@
 {
-  description = "ASUS laptop fan state control utility";
+  description = "Set the fan state on the ZenBook S 16 UM5606 and Vivobook M5606";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
