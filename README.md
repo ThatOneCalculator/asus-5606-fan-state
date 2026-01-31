@@ -18,13 +18,13 @@ Program to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zenbook
 
 ## Installation
 
-### Arch Linux
+### <img src="https://github.com/user-attachments/assets/35681a20-e429-40d4-8ed6-04004217fd93" height="20" alt="Arch Logo" /> Arch Linux
 
 ```sh
 yay -S asus-5606-fan-state # -git, -bin
 ```
 
-### Other Linux
+### <img src="https://github.com/user-attachments/assets/3b1182af-b6c5-4662-a6d2-3922fad98a7a" height="20" alt="Tux" /> Other Linux Distros
 
 #### Prebuilt binary with install script:
 ```sh
@@ -44,7 +44,7 @@ sudo systemctl enable --now asus-fan-permissions.service
 
 ## Desktop/Programatic Integration
 
-If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin in [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
+If you happen to use <img src="https://camo.githubusercontent.com/bb29f107ac50e69cef7c56c2b98887a4fd75b5f5df818ebd549ddd152fea6683/68747470733a2f2f6173736574732e6e6f6374616c69612e6465762f6e6f6374616c69612d6c6f676f2e7376673f763d32" alt="Noctalia Logo" height="20"/> [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin in [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
 
 For your own integrations, to monitor the fan state, you can either:
 - Monitor the `$XDG_RUNTIME_DIR/fan_state` file
