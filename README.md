@@ -35,7 +35,7 @@ yay -S asus-5606-fan-state # -git, -bin
 
 ## Shell Integration
 
-If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin on [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
+If you happen to use [Noctalia Shell](https://noctalia.dev), there's a `fan_state` plugin in [my plugin repo](https://github.com/ThatOneCalculator/personal-noctalia-plugins).
 
 For your own integrations, to monitor the fan state, you can either:
 - Monitor the `$XDG_RUNTIME_DIR/fan_state` file
