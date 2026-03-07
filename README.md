@@ -24,6 +24,28 @@ Program to set the fan state on the ZenBook S 16 UM5606, Vivobook M5606, Zenbook
 yay -S asus-5606-fan-state # -git, -bin
 ```
 
+### <img src="https://raw.githubusercontent.com/NixOS/nixos-artwork/9d2cdedd73d64a068214482902adea3d02783ba8/logo/nix-snowflake-colours.svg" height="20" alt="NixOS Logo"> NixOS
+
+`flake.nix:`
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    asus-fan.url = "github:/ThatOneCalculator/asus-5606-fan-state";
+  };
+  outputs = { nixpkgs, asus-fan, ... }: {
+    nixosConfigurations.hostname = nixpkgs.lib.nixosSystem {
+      modules = [
+        asus-fan.nixosModules.default
+        {
+          services.asus-fan-state.enable = true; # Alternatively, add to ./configuration.nix
+        }
+      ];
+    };
+  };
+}
+```
+
 ### <img src="https://github.com/user-attachments/assets/3b1182af-b6c5-4662-a6d2-3922fad98a7a" height="20" alt="Tux" /> Other Linux Distros
 
 #### Prebuilt binary with install script:
